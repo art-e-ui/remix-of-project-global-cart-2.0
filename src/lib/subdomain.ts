@@ -27,36 +27,22 @@ export function isResellerSubdomain(): boolean {
 }
 
 /**
- * Returns the admin path prefix: "" on admin subdomain, "/admin" on main domain.
+ * Returns the canonical admin path prefix.
  */
 export function adminPrefix(): string {
-  return isAdminSubdomain() ? "" : "/admin";
+  return "/admin";
 }
 
 /**
- * Convert a canonical admin path (e.g. "/admin/orders") to the correct
- * path for the current domain context.
- * On admin subdomain: "/admin/orders" → "/orders"
- * On main domain: "/admin/orders" → "/admin/orders" (unchanged)
+ * Keep admin routes canonical across domains.
  */
 export function adminPath(canonicalPath: string): string {
-  if (isAdminSubdomain() && canonicalPath.startsWith("/admin")) {
-    const stripped = canonicalPath.replace(/^\/admin/, "");
-    return stripped || "/";
-  }
   return canonicalPath;
 }
 
 /**
- * Convert a canonical reseller path (e.g. "/reseller/dashboard") to the correct
- * path for the current domain context.
- * On reseller subdomain: "/reseller/dashboard" → "/dashboard"
- * On main domain: "/reseller/dashboard" → "/reseller/dashboard" (unchanged)
+ * Keep reseller routes canonical across domains.
  */
 export function resellerPath(canonicalPath: string): string {
-  if (isResellerSubdomain() && canonicalPath.startsWith("/reseller")) {
-    const stripped = canonicalPath.replace(/^\/reseller/, "");
-    return stripped || "/";
-  }
   return canonicalPath;
 }
