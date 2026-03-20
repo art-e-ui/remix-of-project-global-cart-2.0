@@ -72,7 +72,7 @@ import SQCVirtualOrdersPage from "./pages/admin/SQCVirtualOrdersPage";
 
 const queryClient = new QueryClient();
 
-/** Admin routes rendered at a given prefix ("" for subdomain, "/admin" for main domain) */
+/** Admin routes rendered at a given prefix (typically "/admin") */
 function AdminRoutes({ prefix }: { prefix: string }) {
   return (
     <>
@@ -115,7 +115,7 @@ function AdminRoutes({ prefix }: { prefix: string }) {
   );
 }
 
-/** Reseller routes rendered at a given prefix ("" for subdomain, "/reseller" for main domain) */
+/** Reseller routes rendered at a given prefix (typically "/reseller") */
 function ResellerRoutes({ prefix }: { prefix: string }) {
   return (
     <>
@@ -162,14 +162,21 @@ const App = () => {
                       <Routes>
                         {portal === "admin" ? (
                           <>
-                            {/* On admin subdomain: serve admin routes at root */}
-                            {AdminRoutes({ prefix: "" })}
-                            <Route path="*" element={<Navigate to="/auth/sign-in" replace />} />
+                            {/* On admin subdomain: keep canonical /admin/* paths */}
+                            {AdminRoutes({ prefix: "/admin" })}
+                            {/* Legacy root-auth aliases */}
+                            <Route path="/auth/sign-in" element={<Navigate to="/admin/auth/sign-in" replace />} />
+                            <Route path="/auth/forgot-password" element={<Navigate to="/admin/auth/forgot-password" replace />} />
+                            <Route path="*" element={<Navigate to="/admin/auth/sign-in" replace />} />
                           </>
                         ) : portal === "reseller" ? (
                           <>
-                            {/* On reseller subdomain: serve reseller routes at root */}
-                            {ResellerRoutes({ prefix: "" })}
+                            {/* On reseller subdomain: keep canonical /reseller/* paths */}
+                            {ResellerRoutes({ prefix: "/reseller" })}
+                            {/* Legacy root-auth aliases */}
+                            <Route path="/login" element={<Navigate to="/reseller/login" replace />} />
+                            <Route path="/register" element={<Navigate to="/reseller/register" replace />} />
+                            <Route path="*" element={<Navigate to="/reseller/login" replace />} />
                           </>
                         ) : (
                           <>
